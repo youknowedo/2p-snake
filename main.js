@@ -11,8 +11,20 @@ https://sprig.hackclub.com/gallery/getting_started
 const p1 = "1";
 const p2 = "2";
 const apple = "A";
+
 const grass = "g";
 const grassWithStraws = "G";
+
+const borderL = "l";
+const borderR = "r";
+const borderT = "t";
+const borderB = "b";
+const borderLT = "c";
+const borderRT = "T";
+const borderLB = "C";
+const borderRB = "B";
+
+const bg = "q";
 
 setLegend(
     [
@@ -114,6 +126,186 @@ setLegend(
 444444444DD44444
 4444444444444444
 4444444444444444`,
+    ],
+    [
+        borderL,
+        bitmap`
+0000000000220000
+0000000000220000
+0000000000002200
+0000000000002200
+0000000000220000
+0000000000220000
+0000000000002200
+0000000000002200
+0000000000220000
+0000000000220000
+0000000000002200
+0000000000002200
+0000000000220000
+0000000000220000
+0000000000002200
+0000000000002200`,
+    ],
+    [
+        borderR,
+        bitmap`
+0002200000000000
+0002200000000000
+0000022000000000
+0000022000000000
+0002200000000000
+0002200000000000
+0000022000000000
+0000022000000000
+0002200000000000
+0002200000000000
+0000022000000000
+0000022000000000
+0002200000000000
+0002200000000000
+0000022000000000
+0000022000000000`,
+    ],
+    [
+        borderT,
+        bitmap`
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+2200220022002200
+2200220022002200
+0022002200220022
+0022002200220022
+0000000000000000
+0000000000000000`,
+    ],
+    [
+        borderB,
+        bitmap`
+0000000000000000
+0000000000000000
+2200220022002200
+2200220022002200
+0022002200220022
+0022002200220022
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000`,
+    ],
+    [
+        borderLT,
+        bitmap`
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000002200
+0000000000002200
+0000000000220022
+0000000000220022
+0000000000002200
+0000000000002200`,
+    ],
+    [
+        borderRT,
+        bitmap`
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+2200220000000000
+2200220000000000
+0022000000000000
+0022000000000000
+0000220000000000
+0000220000000000`,
+    ],
+    [
+        borderLB,
+        bitmap`
+0000000000220000
+0000000000220000
+0000000000002200
+0000000000002200
+0000000000220022
+0000000000220022
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000`,
+    ],
+    [
+        borderRB,
+        bitmap`
+0022000000000000
+0022000000000000
+2200220000000000
+2200220000000000
+0022000000000000
+0022000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000`,
+    ],
+    [
+        bg,
+        bitmap`
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000`,
     ]
 );
 
@@ -122,24 +314,23 @@ setSolids([p1, p2]);
 let level = 0;
 const levels = [
     map`
-ggggggGggggggggggggg
-gggGgggggggGgggGggGg
-gGggggggggGggggggggg
-ggggGggggggggggggggg
-ggggggggggggggGggggG
-GgggggggGggggGgggggg
-gggggGggggggGggggGgg
-ggggggggGggggggggggg
-ggggggggGggGgggggggg
-gggGgGggggggGggGgggg
-GggggggggGggGggggGgg
-ggggggGggggggggggggg
-gggggGggggggGggggggg
-gGgGgggGggGggggggGgg
-gggggggggGggggGggggg
-gggggggggggggggggggG`,
+qqqqqqqqqqqqqqqqqqqq
+qqqqqqqqqqqqqqqqqqqq
+cttttttttttttttttttT
+lgGggggggGgGGggggggr
+lggGggggggggggGggGGr
+lgggggggGggggGgggggr
+lggggGggggggGggggGgr
+lgggggggGggggggggggr
+lgggggggGggGgggggggr
+lggGgGggggggGggGgggr
+lggggggggGggGggggGgr
+lGggggGggggggggggggr
+lggggGggggggGggggggr
+lggGgggGggGggggggGgr
+lgggggggggggggGggggr
+CbbbbbbbbbbbbbbbbbbB`,
 ];
-
 setMap(levels[level]);
 
 setPushables({
@@ -156,18 +347,15 @@ onInput("k", () => player2.facing[1] != -1 && (player2.facing = [0, 1]));
 onInput("j", () => player2.facing[0] != 1 && (player2.facing = [-1, 0]));
 onInput("l", () => player2.facing[0] != -1 && (player2.facing = [1, 0]));
 
-afterInput(() => {
-    console.log(JSON.stringify(getTile(0, 0)));
-    console.log(JSON.stringify(p1));
-});
+afterInput(() => {});
 
 const player1 = {
     sprite: p1,
     facing: [1, 0],
     parts: [
-        [4, 2],
-        [3, 2],
-        [2, 2],
+        [5, 5],
+        [4, 5],
+        [3, 5],
     ],
 };
 player1.parts.map((part) => {
@@ -177,9 +365,9 @@ const player2 = {
     sprite: p2,
     facing: [-1, 0],
     parts: [
-        [15, 13],
-        [16, 13],
-        [17, 13],
+        [14, 12],
+        [15, 12],
+        [16, 12],
     ],
 };
 player2.parts.map((part) => {
@@ -193,8 +381,8 @@ const update = setInterval(() => {
 
 const updatePlayer = (player) => {
     const newHead = [
-        (20 + player.parts[0][0] + player.facing[0]) % 20,
-        (16 + player.parts[0][1] + player.facing[1]) % 16,
+        1 + ((15 + player.parts[0][0] + player.facing[0]) % 16),
+        3 + ((7 + player.parts[0][1] + player.facing[1]) % 10),
     ];
 
     const tilesOnNewHead = getTile(newHead[0], newHead[1]);
@@ -207,6 +395,7 @@ const updatePlayer = (player) => {
                 v._type == grassWithStraws
         )
     ) {
+        console.log(tilesOnNewHead);
         clearInterval(update);
         return;
     }

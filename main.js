@@ -10,7 +10,8 @@ https://sprig.hackclub.com/gallery/getting_started
 
 const p1 = "1";
 const p2 = "2";
-const apple = "A";
+const p1Apple = "a";
+const p2Apple = "A";
 
 const grass = "g";
 const grassWithStraws = "G";
@@ -68,24 +69,44 @@ setLegend(
 .33333333333333.`,
     ],
     [
-        apple,
+        p1Apple,
         bitmap`
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333
-3333333333333333`,
+................
+........7.......
+.......77.......
+....55575555....
+...5255555555...
+..525555555555..
+..555555555555..
+..555555555555..
+..555555555555..
+..555555555555..
+..555555555555..
+...5555555555...
+...5555555555...
+.....557755.....
+................
+................`,
+    ],
+    [
+        p2Apple,
+        bitmap`
+................
+........C.......
+.......CC.......
+....333C3333....
+...3233333333...
+..323333333333..
+..333333333333..
+..333333333333..
+..333333333333..
+..333333333333..
+..333333333333..
+...3333333333...
+...3333333333...
+.....33CC33.....
+................
+................`,
     ],
     [
         grass,
@@ -150,22 +171,22 @@ setLegend(
     [
         borderR,
         bitmap`
-0002200000000000
-0002200000000000
-0000022000000000
-0000022000000000
-0002200000000000
-0002200000000000
-0000022000000000
-0000022000000000
-0002200000000000
-0002200000000000
-0000022000000000
-0000022000000000
-0002200000000000
-0002200000000000
-0000022000000000
-0000022000000000`,
+0022000000000000
+0022000000000000
+0000220000000000
+0000220000000000
+0022000000000000
+0022000000000000
+0000220000000000
+0000220000000000
+0022000000000000
+0022000000000000
+0000220000000000
+0000220000000000
+0022000000000000
+0022000000000000
+0000220000000000
+0000220000000000`,
     ],
     [
         borderT,
@@ -357,6 +378,8 @@ const player1 = {
         [4, 5],
         [3, 5],
     ],
+    food: p1Apple,
+    antiFood: p2Apple,
 };
 player1.parts.map((part) => {
     addSprite(part[0], part[1], p1);
@@ -369,10 +392,15 @@ const player2 = {
         [15, 12],
         [16, 12],
     ],
+    food: p2Apple,
+    antiFood: p1Apple,
 };
 player2.parts.map((part) => {
     addSprite(part[0], part[1], p2);
 });
+
+addSprite(10, 9, p1Apple);
+addSprite(9, 8, p2Apple);
 
 const update = setInterval(() => {
     updatePlayer(player1);
@@ -381,8 +409,8 @@ const update = setInterval(() => {
 
 const updatePlayer = (player) => {
     const newHead = [
-        1 + ((15 + player.parts[0][0] + player.facing[0]) % 16),
-        3 + ((7 + player.parts[0][1] + player.facing[1]) % 10),
+        1 + ((17 + player.parts[0][0] + player.facing[0]) % 18),
+        3 + ((9 + player.parts[0][1] + player.facing[1]) % 12),
     ];
 
     const tilesOnNewHead = getTile(newHead[0], newHead[1]);
@@ -390,7 +418,8 @@ const updatePlayer = (player) => {
         tilesOnNewHead.length > 0 &&
         !tilesOnNewHead.every(
             (v) =>
-                v._type == apple ||
+                v._type == p1Apple ||
+                v._type == p2Apple ||
                 v._type == grass ||
                 v._type == grassWithStraws
         )
@@ -403,19 +432,65 @@ const updatePlayer = (player) => {
     addSprite(newHead[0], newHead[1], player.sprite);
 
     const tail = player.parts[player.parts.length - 1];
+    const nextTail = player.parts[player.parts.length - 2];
 
     const tileUnderTail = getTile(tail[0], tail[1]);
 
-    player.parts.pop();
     clearTile(tail[0], tail[1]);
 
-    if (tileUnderTail.length > 0) {
-        addSprite(
-            tail[0],
-            tail[1],
-            tileUnderTail.find(
-                (v) => v._type == grass || v._type == grassWithStraws
-            )._type
-        );
+    if (!tileUnderTail.find((v) => v._type == player.food)) {
+        player.parts.pop();
+        if (tileUnderTail.find((v) => v._type == player.antiFood)) {
+            while (true) {
+                const nextPosition = [
+                    Math.round(Math.random() * 18) + 1,
+                    Math.round(Math.random() * 12) + 3,
+                ];
+                console.log(getTile(nextPosition[0], nextPosition[1]));
+                if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
+                    addSprite(
+                        nextPosition[0],
+                        nextPosition[1],
+                        player.antiFood
+                    );
+                    break;
+                }
+            }
+
+            const tileUnderNextTail = getTile(nextTail[0], nextTail[1]);
+
+            clearTile(nextTail[0], nextTail[1]);
+            player.parts.pop();
+
+            addSprite(
+                nextTail[0],
+                nextTail[1],
+                tileUnderNextTail.find(
+                    (v) => v._type == grass || v._type == grassWithStraws
+                )._type
+            );
+        }
+    } else {
+        addSprite(tail[0], tail[1], player.sprite);
+
+        while (true) {
+            const nextPosition = [
+                Math.round(Math.random() * 18) + 1,
+                Math.round(Math.random() * 12) + 3,
+            ];
+            console.log(getTile(nextPosition[0], nextPosition[1]));
+            if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
+                addSprite(nextPosition[0], nextPosition[1], player.food);
+                break;
+            }
+        }
     }
+
+    addSprite(
+        tail[0],
+        tail[1],
+        tileUnderTail.find(
+            (v) => v._type == grass || v._type == grassWithStraws
+        )._type
+    );
 };

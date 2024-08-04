@@ -162,6 +162,7 @@ afterInput(() => {
 });
 
 const player1 = {
+    sprite: p1,
     facing: [1, 0],
     parts: [
         [4, 2],
@@ -173,6 +174,7 @@ player1.parts.map((part) => {
     addSprite(part[0], part[1], p1);
 });
 const player2 = {
+    sprite: p2,
     facing: [-1, 0],
     parts: [
         [15, 13],
@@ -185,73 +187,46 @@ player2.parts.map((part) => {
 });
 
 const update = setInterval(() => {
-    const p1NewHead = [
-        (20 + player1.parts[0][0] + player1.facing[0]) % 20,
-        (16 + player1.parts[0][1] + player1.facing[1]) % 16,
-    ];
-    const p2NewHead = [
-        (20 + player2.parts[0][0] + player2.facing[0]) % 20,
-        (16 + player2.parts[0][1] + player2.facing[1]) % 16,
-    ];
-
-    const tilesOnP1NewHead = getTile(p1NewHead[0], p1NewHead[1]);
-    if (
-        tilesOnP1NewHead.length > 0 &&
-        !tilesOnP1NewHead.every(
-            (v) =>
-                v._type == apple ||
-                v._type == grass ||
-                v._type == grassWithStraws
-        )
-    ) {
-        clearInterval(update);
-        return;
-    }
-    player1.parts.unshift(p1NewHead);
-    addSprite(p1NewHead[0], p1NewHead[1], p1);
-
-    const tilesOnP2NewHead = getTile(p2NewHead[0], p2NewHead[1]);
-    if (
-        tilesOnP1NewHead.length > 0 &&
-        !tilesOnP2NewHead.every(
-            (v) =>
-                v._type == apple ||
-                v._type == grass ||
-                v._type == grassWithStraws
-        )
-    ) {
-        clearInterval(update);
-        return;
-    }
-    player2.parts.unshift(p2NewHead);
-    addSprite(p2NewHead[0], p2NewHead[1], p2);
-
-    const p1Tail = player1.parts.pop();
-    const p2Tail = player2.parts.pop();
-
-    // Find out what type of grass was on the tile and replace it with the same type after clearInterval
-    const tileUnderP1Tail = getTile(p1Tail[0], p1Tail[1]);
-    const tileUnderP2Tail = getTile(p2Tail[0], p2Tail[1]);
-
-    clearTile(p1Tail[0], p1Tail[1]);
-    clearTile(p2Tail[0], p2Tail[1]);
-
-    if (tileUnderP1Tail.length > 0) {
-        addSprite(
-            p1Tail[0],
-            p1Tail[1],
-            tileUnderP1Tail.find(
-                (v) => v._type == grass || v._type == grassWithStraws
-            )._type
-        );
-    }
-    if (tileUnderP2Tail.length > 0) {
-        addSprite(
-            p2Tail[0],
-            p2Tail[1],
-            tileUnderP2Tail.find(
-                (v) => v._type == grass || v._type == grassWithStraws
-            )._type
-        );
-    }
+    updatePlayer(player1);
+    updatePlayer(player2);
 }, 500);
+
+const updatePlayer = (player) => {
+    const newHead = [
+        (20 + player.parts[0][0] + player.facing[0]) % 20,
+        (16 + player.parts[0][1] + player.facing[1]) % 16,
+    ];
+
+    const tilesOnNewHead = getTile(newHead[0], newHead[1]);
+    if (
+        tilesOnNewHead.length > 0 &&
+        !tilesOnNewHead.every(
+            (v) =>
+                v._type == apple ||
+                v._type == grass ||
+                v._type == grassWithStraws
+        )
+    ) {
+        clearInterval(update);
+        return;
+    }
+    player.parts.unshift(newHead);
+    addSprite(newHead[0], newHead[1], player.sprite);
+
+    const tail = player.parts[player.parts.length - 1];
+
+    const tileUnderTail = getTile(tail[0], tail[1]);
+
+    player.parts.pop();
+    clearTile(tail[0], tail[1]);
+
+    if (tileUnderTail.length > 0) {
+        addSprite(
+            tail[0],
+            tail[1],
+            tileUnderTail.find(
+                (v) => v._type == grass || v._type == grassWithStraws
+            )._type
+        );
+    }
+};

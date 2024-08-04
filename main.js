@@ -366,55 +366,78 @@ onInput("d", () => player1.facing[0] != -1 && (player1.facing = [1, 0]));
 onInput("i", () => player2.facing[1] != 1 && (player2.facing = [0, -1]));
 onInput("k", () => player2.facing[1] != -1 && (player2.facing = [0, 1]));
 onInput("j", () => player2.facing[0] != 1 && (player2.facing = [-1, 0]));
-onInput("l", () => player2.facing[0] != -1 && (player2.facing = [1, 0]));
+onInput("l", () => {
+    if (gameEnded) {
+        gameEnded = false;
+        clearText();
+        startGame();
+    } else player2.facing[0] != -1 && (player2.facing = [1, 0]);
+});
 
 afterInput(() => {});
 
 const player1 = {
     sprite: p1,
     facing: [1, 0],
-    parts: [
-        [5, 5],
-        [4, 5],
-        [3, 5],
-    ],
+    parts: [],
     food: p1Apple,
     antiFood: p2Apple,
 };
-player1.parts.map((part) => {
-    addSprite(part[0], part[1], p1);
-});
 const player2 = {
     sprite: p2,
     facing: [-1, 0],
-    parts: [
-        [14, 12],
-        [15, 12],
-        [16, 12],
-    ],
+    parts: [],
     food: p2Apple,
     antiFood: p1Apple,
 };
-player2.parts.map((part) => {
-    addSprite(part[0], part[1], p2);
-});
 
-addSprite(10, 9, p1Apple);
-addSprite(9, 8, p2Apple);
+const startGame = () => {
+    player1.parts = [
+        [5, 5],
+        [4, 5],
+        [3, 5],
+    ];
+    player1.parts.map((part) => {
+        addSprite(part[0], part[1], p1);
+    });
+    player2.parts = [
+        [14, 12],
+        [15, 12],
+        [16, 12],
+    ];
+    player2.parts.map((part) => {
+        addSprite(part[0], part[1], p2);
+    });
+
+    addSprite(10, 9, p1Apple);
+    addSprite(9, 8, p2Apple);
+
+    addText(`2P Snake       ${("00" + points).slice(-3)}`, {
+        x: 1,
+        y: 1,
+        color: color`2`,
+    });
+
+    points = 0;
+
+    update = setInterval(onUpdate, 500);
+};
 
 let points = 0;
 
-const update = setInterval(() => {
-    updatePlayer(player1);
-    updatePlayer(player2);
-
+const onUpdate = () => {
     clearText();
     addText(`2P Snake       ${("00" + points).slice(-3)}`, {
         x: 1,
         y: 1,
         color: color`2`,
     });
-}, 500);
+
+    updatePlayer(player1);
+    updatePlayer(player2);
+};
+
+let update;
 
 const updatePlayer = (player) => {
     const tail = player.parts[player.parts.length - 1];
@@ -428,7 +451,7 @@ const updatePlayer = (player) => {
             player.parts.pop();
 
             if (player.parts.length < 3) {
-                clearInterval(update);
+                gameOver();
                 return;
             }
 
@@ -461,7 +484,7 @@ const updatePlayer = (player) => {
             );
 
             if (player.parts.length < 3) {
-                clearInterval(update);
+                gameOver();
                 return;
             }
 
@@ -501,8 +524,7 @@ const updatePlayer = (player) => {
                 v._type == grassWithStraws
         )
     ) {
-        console.log(tilesOnNewHead);
-        clearInterval(update);
+        gameOver();
         return;
     }
     player.parts.unshift(newHead);
@@ -517,3 +539,34 @@ const updatePlayer = (player) => {
         )._type
     );
 };
+
+let gameEnded = false;
+const gameOver = () => {
+    gameEnded = true;
+    clearInterval(update);
+
+    clearText();
+    addText(`Game Over      ${("00" + points).slice(-3)}`, {
+        x: 1,
+        y: 1,
+        color: color`2`,
+    });
+    addText("'L' to try again", {
+        y: 13,
+        color: color`2`,
+    });
+
+    const tilesToClear = [
+        ...tilesWith(p1),
+        ...tilesWith(p2),
+        ...tilesWith(p1Apple),
+        ...tilesWith(p2Apple),
+    ];
+    console.log(tilesToClear);
+    tilesToClear.map((tile) => {
+        console.log(tile);
+        clearTile(tile[0]._x, tile[0]._y);
+    });
+};
+
+startGame();

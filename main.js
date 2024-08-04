@@ -1,12 +1,11 @@
 /*
-First time? Check out the tutorial game:
-https://sprig.hackclub.com/gallery/getting_started
-
 @title: 2P Snake
-@author: 
-@tags: []
+@author: Sigfredo
+@tags: ["snake", "multiplayer"]
 @addedOn: 2024-00-00
 */
+
+// Probably the worst code I've ever written, but it works ¯\_(ツ)_/¯
 
 const p1 = "1";
 const p2 = "2";

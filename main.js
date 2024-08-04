@@ -428,7 +428,7 @@ const setupGame = () => {
     addSprite(9, 9, p2Apple);
 
     clearText();
-    addText(`2P Snake       ${("00" + points).slice(-3)}`, {
+    addText(`2P SNAKE       ${("00" + points).slice(-3)}`, {
         x: 1,
         y: 1,
         color: color`2`,
@@ -441,7 +441,7 @@ let points = 0;
 
 const onUpdate = () => {
     clearText();
-    addText(`2P Snake       ${("00" + points).slice(-3)}`, {
+    addText(`2P SNAKE       ${("00" + points).slice(-3)}`, {
         x: 1,
         y: 1,
         color: color`2`,
@@ -565,14 +565,14 @@ const gameOver = (winner) => {
         y: 1,
         color: winner == p1 ? color`5` : color`3`,
     });
-    addText("'L' to try again", {
+    addText("'L' TO TRY AGAIN", {
         y: 13,
         color: color`2`,
     });
 };
 
 setupGame();
-addText("'L' to start", {
+addText("'L' TO START", {
     y: 13,
     color: color`2`,
 });

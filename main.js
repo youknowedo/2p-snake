@@ -367,7 +367,6 @@ onInput("i", () => player2.facing[1] != 1 && (player2.facing = [0, -1]));
 onInput("k", () => player2.facing[1] != -1 && (player2.facing = [0, 1]));
 onInput("j", () => player2.facing[0] != 1 && (player2.facing = [-1, 0]));
 onInput("l", () => {
-    console.log(gameStarted);
     if (!gameStarted) {
         gameStarted = true;
 
@@ -447,81 +446,13 @@ const onUpdate = () => {
         color: color`2`,
     });
 
-    updatePlayer(player1);
-    updatePlayer(player2);
+    if (updatePlayer(player1) == -1) return gameOver(p1);
+    if (updatePlayer(player2) == -1) return gameOver(p2);
 };
 
 let update;
 
 const updatePlayer = (player) => {
-    const tail = player.parts[player.parts.length - 1];
-    const nextTail = player.parts[player.parts.length - 2];
-
-    const tileUnderTail = getTile(tail[0], tail[1]);
-
-    if (!tileUnderTail.find((v) => v._type == player.food)) {
-        player.parts.pop();
-        if (tileUnderTail.find((v) => v._type == player.antiFood)) {
-            player.parts.pop();
-
-            if (player.parts.length < 3) {
-                gameOver(player.sprite == p1 ? p2 : p1);
-                return;
-            }
-
-            while (true) {
-                const nextPosition = [
-                    Math.round(Math.random() * 18) + 1,
-                    Math.round(Math.random() * 12) + 3,
-                ];
-                console.log(getTile(nextPosition[0], nextPosition[1]));
-                if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
-                    addSprite(
-                        nextPosition[0],
-                        nextPosition[1],
-                        player.antiFood
-                    );
-                    break;
-                }
-            }
-
-            const tileUnderNextTail = getTile(nextTail[0], nextTail[1]);
-
-            clearTile(nextTail[0], nextTail[1]);
-
-            addSprite(
-                nextTail[0],
-                nextTail[1],
-                tileUnderNextTail.find(
-                    (v) => v._type == grass || v._type == grassWithStraws
-                )._type
-            );
-
-            if (player.parts.length < 3) {
-                gameOver(player.sprite == p1 ? p2 : p1);
-                return;
-            }
-
-            points--;
-        }
-    } else {
-        addSprite(tail[0], tail[1], player.sprite);
-
-        while (true) {
-            const nextPosition = [
-                Math.round(Math.random() * 18) + 1,
-                Math.round(Math.random() * 12) + 3,
-            ];
-            console.log(getTile(nextPosition[0], nextPosition[1]));
-            if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
-                addSprite(nextPosition[0], nextPosition[1], player.food);
-                break;
-            }
-        }
-
-        points++;
-    }
-
     const newHead = [
         1 + ((17 + player.parts[0][0] + player.facing[0]) % 18),
         3 + ((9 + player.parts[0][1] + player.facing[1]) % 12),
@@ -538,20 +469,65 @@ const updatePlayer = (player) => {
                 v._type == grassWithStraws
         )
     ) {
-        gameOver(player.sprite == p1 ? p2 : p1);
-        return;
+        return -1;
     }
     player.parts.unshift(newHead);
-    addSprite(newHead[0], newHead[1], player.sprite);
 
-    clearTile(tail[0], tail[1]);
-    addSprite(
-        tail[0],
-        tail[1],
-        tileUnderTail.find(
-            (v) => v._type == grass || v._type == grassWithStraws
-        )._type
-    );
+    if (!tilesOnNewHead.find((v) => v._type == player.food)) {
+        player.parts.pop();
+        if (tilesOnNewHead.find((v) => v._type == player.antiFood)) {
+            player.parts.pop();
+
+            if (player.parts.length < 3) {
+                return -1;
+            }
+
+            spawnFood(player.antiFood);
+
+            if (player.parts.length < 3) {
+                return -1;
+            }
+
+            points--;
+        }
+    } else {
+        player.parts.push(player.parts[player.parts.length - 1]);
+        spawnFood(player.food);
+
+        points++;
+    }
+
+    tilesWith(player.sprite)
+        .map((v) => v[0])
+        .map((v) => [v._x, v._y])
+        .map((part) => {
+            const spritesOnTile = getTile(part[0], part[1]);
+            const grassType = spritesOnTile.find(
+                (v) => v._type == grass || v._type == grassWithStraws
+            )._type;
+            clearTile(part[0], part[1]);
+            addSprite(part[0], part[1], grassType);
+        });
+
+    player.parts.map((part) => {
+        addSprite(part[0], part[1], player.sprite);
+    });
+
+    return 0;
+};
+
+const spawnFood = (food) => {
+    while (true) {
+        const nextPosition = [
+            Math.round(Math.random() * 18) + 1,
+            Math.round(Math.random() * 12) + 3,
+        ];
+
+        if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
+            addSprite(nextPosition[0], nextPosition[1], food);
+            break;
+        }
+    }
 };
 
 let gameStarted = false;

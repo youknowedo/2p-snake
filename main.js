@@ -402,9 +402,18 @@ player2.parts.map((part) => {
 addSprite(10, 9, p1Apple);
 addSprite(9, 8, p2Apple);
 
+let points = 0;
+
 const update = setInterval(() => {
     updatePlayer(player1);
     updatePlayer(player2);
+
+    clearText();
+    addText(`2P Snake       ${("00" + points).slice(-3)}`, {
+        x: 1,
+        y: 1,
+        color: color`2`,
+    });
 }, 500);
 
 const updatePlayer = (player) => {
@@ -469,6 +478,13 @@ const updatePlayer = (player) => {
                     (v) => v._type == grass || v._type == grassWithStraws
                 )._type
             );
+
+            if (player.parts.length < 3) {
+                clearInterval(update);
+                return;
+            }
+
+            points--;
         }
     } else {
         addSprite(tail[0], tail[1], player.sprite);
@@ -484,6 +500,8 @@ const updatePlayer = (player) => {
                 break;
             }
         }
+
+        points++;
     }
 
     addSprite(

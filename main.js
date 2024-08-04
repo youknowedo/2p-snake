@@ -367,10 +367,23 @@ onInput("i", () => player2.facing[1] != 1 && (player2.facing = [0, -1]));
 onInput("k", () => player2.facing[1] != -1 && (player2.facing = [0, 1]));
 onInput("j", () => player2.facing[0] != 1 && (player2.facing = [-1, 0]));
 onInput("l", () => {
-    if (gameEnded) {
-        gameEnded = false;
-        clearText();
-        startGame();
+    console.log(gameStarted);
+    if (!gameStarted) {
+        gameStarted = true;
+
+        const tilesToClear = [
+            ...tilesWith(p1),
+            ...tilesWith(p2),
+            ...tilesWith(p1Apple),
+            ...tilesWith(p2Apple),
+        ];
+        tilesToClear.map((tile) => {
+            clearTile(tile[0]._x, tile[0]._y);
+        });
+        setMap(levels[level]);
+
+        setupGame();
+        update = setInterval(onUpdate, 500);
     } else player2.facing[0] != -1 && (player2.facing = [1, 0]);
 });
 
@@ -378,40 +391,43 @@ afterInput(() => {});
 
 const player1 = {
     sprite: p1,
-    facing: [1, 0],
+    facing: [],
     parts: [],
     food: p1Apple,
     antiFood: p2Apple,
 };
 const player2 = {
     sprite: p2,
-    facing: [-1, 0],
+    facing: [],
     parts: [],
     food: p2Apple,
     antiFood: p1Apple,
 };
 
-const startGame = () => {
+const setupGame = () => {
     player1.parts = [
-        [5, 5],
-        [4, 5],
-        [3, 5],
+        [3, 8],
+        [3, 7],
+        [3, 6],
     ];
+    player1.facing = [0, 1];
     player1.parts.map((part) => {
         addSprite(part[0], part[1], p1);
     });
+    player2.facing = [0, -1];
     player2.parts = [
-        [14, 12],
-        [15, 12],
-        [16, 12],
+        [16, 9],
+        [16, 10],
+        [16, 11],
     ];
     player2.parts.map((part) => {
         addSprite(part[0], part[1], p2);
     });
 
-    addSprite(10, 9, p1Apple);
-    addSprite(9, 8, p2Apple);
+    addSprite(10, 8, p1Apple);
+    addSprite(9, 9, p2Apple);
 
+    clearText();
     addText(`2P Snake       ${("00" + points).slice(-3)}`, {
         x: 1,
         y: 1,
@@ -419,8 +435,6 @@ const startGame = () => {
     });
 
     points = 0;
-
-    update = setInterval(onUpdate, 500);
 };
 
 let points = 0;
@@ -451,7 +465,7 @@ const updatePlayer = (player) => {
             player.parts.pop();
 
             if (player.parts.length < 3) {
-                gameOver();
+                gameOver(player.sprite == p1 ? p2 : p1);
                 return;
             }
 
@@ -484,7 +498,7 @@ const updatePlayer = (player) => {
             );
 
             if (player.parts.length < 3) {
-                gameOver();
+                gameOver(player.sprite == p1 ? p2 : p1);
                 return;
             }
 
@@ -524,7 +538,7 @@ const updatePlayer = (player) => {
                 v._type == grassWithStraws
         )
     ) {
-        gameOver();
+        gameOver(player.sprite == p1 ? p2 : p1);
         return;
     }
     player.parts.unshift(newHead);
@@ -540,33 +554,25 @@ const updatePlayer = (player) => {
     );
 };
 
-let gameEnded = false;
-const gameOver = () => {
-    gameEnded = true;
+let gameStarted = false;
+const gameOver = (winner) => {
+    gameStarted = false;
     clearInterval(update);
 
     clearText();
     addText(`Game Over      ${("00" + points).slice(-3)}`, {
         x: 1,
         y: 1,
-        color: color`2`,
+        color: winner == p1 ? color`5` : color`3`,
     });
     addText("'L' to try again", {
         y: 13,
         color: color`2`,
     });
-
-    const tilesToClear = [
-        ...tilesWith(p1),
-        ...tilesWith(p2),
-        ...tilesWith(p1Apple),
-        ...tilesWith(p2Apple),
-    ];
-    console.log(tilesToClear);
-    tilesToClear.map((tile) => {
-        console.log(tile);
-        clearTile(tile[0]._x, tile[0]._y);
-    });
 };
 
-startGame();
+setupGame();
+addText("'L' to start", {
+    y: 13,
+    color: color`2`,
+});

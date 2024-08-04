@@ -417,39 +417,21 @@ const update = setInterval(() => {
 }, 500);
 
 const updatePlayer = (player) => {
-    const newHead = [
-        1 + ((17 + player.parts[0][0] + player.facing[0]) % 18),
-        3 + ((9 + player.parts[0][1] + player.facing[1]) % 12),
-    ];
-
-    const tilesOnNewHead = getTile(newHead[0], newHead[1]);
-    if (
-        tilesOnNewHead.length > 0 &&
-        !tilesOnNewHead.every(
-            (v) =>
-                v._type == p1Apple ||
-                v._type == p2Apple ||
-                v._type == grass ||
-                v._type == grassWithStraws
-        )
-    ) {
-        console.log(tilesOnNewHead);
-        clearInterval(update);
-        return;
-    }
-    player.parts.unshift(newHead);
-    addSprite(newHead[0], newHead[1], player.sprite);
-
     const tail = player.parts[player.parts.length - 1];
     const nextTail = player.parts[player.parts.length - 2];
 
     const tileUnderTail = getTile(tail[0], tail[1]);
 
-    clearTile(tail[0], tail[1]);
-
     if (!tileUnderTail.find((v) => v._type == player.food)) {
         player.parts.pop();
         if (tileUnderTail.find((v) => v._type == player.antiFood)) {
+            player.parts.pop();
+
+            if (player.parts.length < 3) {
+                clearInterval(update);
+                return;
+            }
+
             while (true) {
                 const nextPosition = [
                     Math.round(Math.random() * 18) + 1,
@@ -469,7 +451,6 @@ const updatePlayer = (player) => {
             const tileUnderNextTail = getTile(nextTail[0], nextTail[1]);
 
             clearTile(nextTail[0], nextTail[1]);
-            player.parts.pop();
 
             addSprite(
                 nextTail[0],
@@ -504,6 +485,30 @@ const updatePlayer = (player) => {
         points++;
     }
 
+    const newHead = [
+        1 + ((17 + player.parts[0][0] + player.facing[0]) % 18),
+        3 + ((9 + player.parts[0][1] + player.facing[1]) % 12),
+    ];
+
+    const tilesOnNewHead = getTile(newHead[0], newHead[1]);
+    if (
+        tilesOnNewHead.length > 0 &&
+        !tilesOnNewHead.every(
+            (v) =>
+                v._type == p1Apple ||
+                v._type == p2Apple ||
+                v._type == grass ||
+                v._type == grassWithStraws
+        )
+    ) {
+        console.log(tilesOnNewHead);
+        clearInterval(update);
+        return;
+    }
+    player.parts.unshift(newHead);
+    addSprite(newHead[0], newHead[1], player.sprite);
+
+    clearTile(tail[0], tail[1]);
     addSprite(
         tail[0],
         tail[1],

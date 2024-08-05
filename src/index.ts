@@ -26,6 +26,14 @@ const borderRB = "B";
 
 const bg = "q";
 
+type Player = {
+    sprite: string;
+    facing: [number, number];
+    parts: [number, number][];
+    food: string;
+    antiFood: string;
+};
+
 setLegend(
     [
         p1,
@@ -376,7 +384,7 @@ onInput("l", () => {
             ...tilesWith(p2Apple),
         ];
         tilesToClear.map((tile) => {
-            clearTile(tile[0]._x, tile[0]._y);
+            clearTile(tile[0].x, tile[0].y);
         });
         setMap(levels[level]);
 
@@ -387,16 +395,16 @@ onInput("l", () => {
 
 afterInput(() => {});
 
-const player1 = {
+const player1: Player = {
     sprite: p1,
-    facing: [],
+    facing: [0, 0],
     parts: [],
     food: p1Apple,
     antiFood: p2Apple,
 };
-const player2 = {
+const player2: Player = {
     sprite: p2,
-    facing: [],
+    facing: [0, 0],
     parts: [],
     food: p2Apple,
     antiFood: p1Apple,
@@ -449,36 +457,22 @@ const onUpdate = () => {
     if (updatePlayer(player2) == -1) return gameOver(p2);
 };
 
-let update;
+let update: Timer;
 
-const updatePlayer = (player) => {
+const updatePlayer = (player: Player) => {
     const tail = player.parts[player.parts.length - 1];
     const nextTail = player.parts[player.parts.length - 2];
 
     const tileUnderTail = getTile(tail[0], tail[1]);
 
-    if (!tileUnderTail.find((v) => v._type == player.food)) {
+    if (!tileUnderTail.find((v) => v.type == player.food)) {
         player.parts.pop();
-        if (tileUnderTail.find((v) => v._type == player.antiFood)) {
+        if (tileUnderTail.find((v) => v.type == player.antiFood)) {
             player.parts.pop();
 
             if (player.parts.length < 3) return -1;
 
-            while (true) {
-                const nextPosition = [
-                    Math.round(Math.random() * 18) + 1,
-                    Math.round(Math.random() * 12) + 3,
-                ];
-                console.log(getTile(nextPosition[0], nextPosition[1]));
-                if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
-                    addSprite(
-                        nextPosition[0],
-                        nextPosition[1],
-                        player.antiFood
-                    );
-                    break;
-                }
-            }
+            spawnFood(player.food);
 
             const tileUnderNextTail = getTile(nextTail[0], nextTail[1]);
 
@@ -488,8 +482,8 @@ const updatePlayer = (player) => {
                 nextTail[0],
                 nextTail[1],
                 tileUnderNextTail.find(
-                    (v) => v._type == grass || v._type == grassWithStraws
-                )._type
+                    (v) => v.type == grass || v.type == grassWithStraws
+                )?.type ?? ""
             );
 
             if (player.parts.length < 3) return -1;
@@ -499,22 +493,12 @@ const updatePlayer = (player) => {
     } else {
         addSprite(tail[0], tail[1], player.sprite);
 
-        while (true) {
-            const nextPosition = [
-                Math.round(Math.random() * 18) + 1,
-                Math.round(Math.random() * 12) + 3,
-            ];
-            console.log(getTile(nextPosition[0], nextPosition[1]));
-            if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
-                addSprite(nextPosition[0], nextPosition[1], player.food);
-                break;
-            }
-        }
+        spawnFood(player.food);
 
         points++;
     }
 
-    const newHead = [
+    const newHead: [number, number] = [
         1 + ((17 + player.parts[0][0] + player.facing[0]) % 18),
         3 + ((9 + player.parts[0][1] + player.facing[1]) % 12),
     ];
@@ -524,10 +508,10 @@ const updatePlayer = (player) => {
         tilesOnNewHead.length > 0 &&
         !tilesOnNewHead.every(
             (v) =>
-                v._type == p1Apple ||
-                v._type == p2Apple ||
-                v._type == grass ||
-                v._type == grassWithStraws
+                v.type == p1Apple ||
+                v.type == p2Apple ||
+                v.type == grass ||
+                v.type == grassWithStraws
         )
     )
         return -1;
@@ -539,15 +523,14 @@ const updatePlayer = (player) => {
     addSprite(
         tail[0],
         tail[1],
-        tileUnderTail.find(
-            (v) => v._type == grass || v._type == grassWithStraws
-        )._type
+        tileUnderTail.find((v) => v.type == grass || v.type == grassWithStraws)
+            ?.type ?? ""
     );
 
     return 0;
 };
 
-const spawnFood = (food) => {
+const spawnFood = (food: string) => {
     while (true) {
         const nextPosition = [
             Math.round(Math.random() * 18) + 1,
@@ -562,7 +545,7 @@ const spawnFood = (food) => {
 };
 
 let gameStarted = false;
-const gameOver = (winner) => {
+const gameOver = (winner: string) => {
     gameStarted = false;
     clearInterval(update);
 

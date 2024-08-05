@@ -1,5 +1,7 @@
 declare global {
+    type Bitmap = unknown;
     function bitmap(template: TemplateStringsArray): Bitmap;
+    type Map = unknown;
     function map(template: TemplateStringsArray): Map;
 
     function setLegend(...bitmaps: [string, Bitmap][]): void;
@@ -27,6 +29,7 @@ declare global {
     function getAll(type?: string): Sprite[];
     function getFirst(type: string): Sprite;
 
+    type Color = unknown;
     function color(template: TemplateStringsArray): Color;
     type AddTextOptions = {
         x?: number;
@@ -37,6 +40,7 @@ declare global {
     function addText(text: string, options?: AddTextOptions): void;
     function clearText(): void;
 
+    type Tune = unknown;
     function tune(template: TemplateStringsArray): Tune;
     type Playback = {
         end: () => void;

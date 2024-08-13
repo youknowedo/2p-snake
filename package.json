@@ -1,9 +1,20 @@
 {
     "name": "2p-snake",
-    "module": "index.ts",
+    "displayName": "Sprig Template",
+    "description": "A template for creating Sprig games with TypeScript.",
+    "private": true,
+    "version": "1.0.0",
     "type": "module",
+    "scripts": {
+        "build": "tsup src/index.ts --format esm",
+        "postbuild": "create-sprig postbuild",
+        "postinstall": "create-sprig postinstall",
+        "watch": "tsup src/index.ts --watch --format esm"
+    },
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/vscode-webview": "^1.57.5",
+        "sprig": "^1.1.3",
+        "tsup": "^8.2.4"
     },
     "peerDependencies": {
         "typescript": "^5.0.0"

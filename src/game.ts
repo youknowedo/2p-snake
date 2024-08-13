@@ -2,9 +2,15 @@ import { playGameOverSound } from "./music";
 import { players, setupPlayer, updatePlayer } from "./player";
 import { p1, p1Apple, p2, p2Apple } from "./sprites";
 
-export const game: { started: boolean; points: number; tick?: Timer } = {
+export const game: {
+    started: boolean;
+    points: number;
+    speed: number;
+    tick?: number;
+} = {
     started: false,
     points: 0,
+    speed: 200,
 };
 
 export let level = map`
@@ -57,6 +63,7 @@ export const setupGame = () => {
     });
 
     game.points = 0;
+    game.speed = 200;
 };
 
 export const onUpdate = () => {

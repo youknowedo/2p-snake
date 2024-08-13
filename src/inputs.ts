@@ -48,7 +48,7 @@ export const registerInputs = () => {
             setMap(level);
 
             setupGame();
-            game.tick = setInterval(onUpdate, 200);
+            game.tick = setInterval(onUpdate, game.speed++);
         } else players[1].facing[0] != -1 && (players[1].newFacing = [1, 0]);
     });
 

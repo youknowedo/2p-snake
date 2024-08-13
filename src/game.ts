@@ -66,6 +66,24 @@ export const setupGame = () => {
     game.speed = 200;
 };
 
+export const startGame = () => {
+    game.started = true;
+
+    const tilesToClear = [
+        ...tilesWith(p1),
+        ...tilesWith(p2),
+        ...tilesWith(p1Apple),
+        ...tilesWith(p2Apple),
+    ];
+    tilesToClear.map((tile) => {
+        clearTile(tile[0].x, tile[0].y);
+    });
+    setMap(level);
+
+    setupGame();
+    game.tick = setInterval(onUpdate, game.speed++);
+};
+
 export const onUpdate = () => {
     clearText();
     addText(`2P SNAKE       ${("00" + game.points).slice(-3)}`, {
@@ -94,4 +112,18 @@ export const gameOver = (winner: string) => {
         y: 13,
         color: color`2`,
     });
+};
+
+export const spawnFood = (food: string) => {
+    while (true) {
+        const nextPosition = [
+            Math.round(Math.random() * 17) + 1,
+            Math.round(Math.random() * 11) + 3,
+        ];
+
+        if (getTile(nextPosition[0], nextPosition[1]).length == 1) {
+            addSprite(nextPosition[0], nextPosition[1], food);
+            break;
+        }
+    }
 };

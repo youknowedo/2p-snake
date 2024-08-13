@@ -1,5 +1,4 @@
-import { game } from "./game";
-import { spawnFood } from "./misc";
+import { game, spawnFood } from "./game";
 import { foodSound } from "./music";
 import { grass, grassWithStraws, p1, p1Apple, p2, p2Apple } from "./sprites";
 

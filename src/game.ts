@@ -1,3 +1,4 @@
+import { playGameOverSound } from "./music";
 import { players, setupPlayer, updatePlayer } from "./player";
 import { p1, p1Apple, p2, p2Apple } from "./sprites";
 
@@ -71,6 +72,8 @@ export const onUpdate = () => {
 };
 
 export const gameOver = (winner: string) => {
+    playGameOverSound();
+
     game.started = false;
     clearInterval(game.tick);
 
@@ -78,7 +81,7 @@ export const gameOver = (winner: string) => {
     addText(`Game Over      ${("00" + game.points).slice(-3)}`, {
         x: 1,
         y: 1,
-        color: winner == p1 ? color`5` : color`3`,
+        color: winner == p1 ? color`3` : color`5`,
     });
     addText("'L' TO TRY AGAIN", {
         y: 13,

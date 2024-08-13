@@ -1,10 +1,12 @@
 import { game } from "./game";
 import { spawnFood } from "./misc";
+import { foodSound } from "./music";
 import { grass, grassWithStraws, p1, p1Apple, p2, p2Apple } from "./sprites";
 
 export type Player = {
     sprite: string;
     facing: [number, number];
+    newFacing?: [number, number];
     parts: [number, number][];
     food: string;
     antiFood: string;
@@ -34,12 +36,18 @@ export const setupPlayer = (
 ) => {
     player.parts = parts;
     player.facing = facing;
+    player.newFacing = undefined;
     player.parts.map((part) => {
         addSprite(part[0], part[1], player.sprite);
     });
 };
 
 export const updatePlayer = (player: Player) => {
+    if (player.newFacing) {
+        player.facing = player.newFacing;
+        player.newFacing = undefined;
+    }
+
     const tail = player.parts[player.parts.length - 1];
     const tileUnderTail = getTile(tail[0], tail[1]);
 
@@ -99,6 +107,11 @@ export const updatePlayer = (player: Player) => {
         )
     )
         return -1;
+
+    if (tilesOnNewHead.find((v) => v.type == player.food))
+        playTune(foodSound, 1);
+    else if (tilesOnNewHead.find((v) => v.type == player.antiFood))
+        playTune(foodSound, 1);
 
     player.parts.unshift(newHead);
     addSprite(newHead[0], newHead[1], player.sprite);
